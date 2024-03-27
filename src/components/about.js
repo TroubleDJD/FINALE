@@ -55,12 +55,8 @@ function About() {
       {/* Image section */}
       <Row className="mt-3">
         <Col>
-          <img src="https://www.visitsantamarta.com/storage/blogs/centro%20historico.jpg"  alt="Historical Santa Marta" className="img-fluid" />
+          <img src="https://www.visitsantamarta.com/storage/blogs/centro%20historico.jpg" alt="Historical Santa Marta" className="img-fluid" />
         </Col>
-        <col>
-          <img src="./images/inside.jpeg" alt="Enter the residence" className="img-fluid" />
-        </col>
-        
       </Row>
 
       {/* Add Amenity form */}
