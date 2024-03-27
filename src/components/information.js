@@ -11,6 +11,11 @@ function Information() {
         <Link to="/contact" className="btn btn-primary mr-3">Information</Link>
       </div>
       <Row className="mt-5">
+      <div>
+        <Col>
+          <img src="/IMG_3929.jpeg" alt="Enter the residence" className="img-fluid" />
+        </Col>
+      </div>
         
       </Row>
       <h4 className="mt-3">Please provide contact information</h4>
