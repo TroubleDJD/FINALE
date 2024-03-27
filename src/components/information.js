@@ -12,10 +12,18 @@ function Information() {
       </div>
       <Row className="mt-5">
       <div>
-        <Col>
-          <img src="/IMG_3929.jpeg" alt="Enter the residence" className="img-fluid" />
-        </Col>
-      </div>
+  <Col className="d-flex justify-content-center">
+    <div className="border rounded p-3 border-info">
+      <img 
+        src="/IMG_3929.jpeg" 
+        alt="dusky view at Casa Del Rio" 
+        style={{ maxWidth: '800px', maxHeight: '500px' }} 
+        className="img-fluid" 
+      />
+    </div>
+  </Col>
+</div>
+
         
       </Row>
       <h4 className="mt-3">Please provide contact information</h4>
