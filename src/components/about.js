@@ -6,6 +6,7 @@ function About() {
   const [amenities, setAmenities] = useState([]);
   const [newAmenity, setNewAmenity] = useState({ name: '', description: '' });
   const [editIndex, setEditIndex] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     // Fetch amenities data from the API or local storage on component mount
@@ -18,6 +19,12 @@ function About() {
   };
 
   const addAmenity = () => {
+    if (!newAmenity.name.trim() || !newAmenity.description.trim()) {
+      // If either name or description is blank, set error message
+      setErrorMessage('Both fields must be completed to add the amenity');
+      return;
+    }
+
     if (editIndex !== null) {
       // Update existing amenity
       const updatedAmenities = [...amenities];
@@ -28,7 +35,8 @@ function About() {
       // Add new amenity
       setAmenities([...amenities, newAmenity]);
     }
-    // Clear input fields
+    // Clear error message and input fields
+    setErrorMessage('');
     setNewAmenity({ name: '', description: '' });
   };
 
@@ -73,6 +81,7 @@ function About() {
             <Button variant="primary" onClick={addAmenity}>{editIndex !== null ? 'Update' : 'Add'} Amenity</Button>
           </Col>
         </Row>
+        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
       </Form>
 
       {/* Display Amenities */}

@@ -31,7 +31,7 @@ function Home() {
           <img src="/kitch.jpeg" alt="Enter the residence" className="img-fluid" />
         </Col>
         </div>
-      </Row>
+      </Row>  
     </Container>
   );
 }

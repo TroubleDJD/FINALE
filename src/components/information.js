@@ -89,10 +89,17 @@ function Information() {
         </Col>
       </Row>
       <Row className="mt-5">
-        <Col>
-        <h2>Locations of Interest</h2>
-          <img src="https://www.tomplanmytrip.com/wp-content/uploads/2022/07/MAPA-SANTA-MARTA-1.jpg" alt="Map of Santa Marta" className="img-fluid" />
-        </Col>
+      <Col>
+  <h2>Locations of Interest</h2>
+  <div className="d-inline-block border border-dark border-3 rounded p-3">
+    <img 
+      src="https://www.tomplanmytrip.com/wp-content/uploads/2022/07/MAPA-SANTA-MARTA-1.jpg" 
+      alt="Map of Santa Marta" 
+      className="img-fluid" 
+    />
+  </div>
+</Col>
+
       </Row>
     </Container>
   );
