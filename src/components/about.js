@@ -25,6 +25,9 @@ function About() {
       return;
     }
 
+    // Manually construct the complete data of the new amenity
+    const newAmenityData = { ...newAmenity };
+
     fetch('https://6601a5cb9d7276a75551e1cd.mockapi.io/week16/amenities', {
       method: 'POST',
       headers: {
@@ -34,7 +37,8 @@ function About() {
     })
     .then(response => response.json())
     .then(data => {
-      setAmenities([...amenities, data]); // Add the newly created amenity to the state
+      // Add the constructed new amenity to the state
+      setAmenities([...amenities, newAmenityData]);
       setErrorMessage('');
       setNewAmenity({ name: '', description: '' });
     })
