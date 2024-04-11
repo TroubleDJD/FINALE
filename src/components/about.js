@@ -25,19 +25,23 @@ function About() {
       return;
     }
 
-    if (editIndex !== null) {
-      // Update existing amenity
-      const updatedAmenities = [...amenities];
-      updatedAmenities[editIndex] = newAmenity;
-      setAmenities(updatedAmenities);
-      setEditIndex(null);
-    } else {
-      // Add new amenity
-      setAmenities([...amenities, newAmenity]);
-    }
-    // Clear error message and input fields
-    setErrorMessage('');
-    setNewAmenity({ name: '', description: '' });
+    fetch('https://6601a5cb9d7276a75551e1cd.mockapi.io/week16/amenities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newAmenity),
+    })
+    .then(response => response.json())
+    .then(data => {
+      setAmenities([...amenities, data]); // Add the newly created amenity to the state
+      setErrorMessage('');
+      setNewAmenity({ name: '', description: '' });
+    })
+    .catch(error => {
+      console.error('Error adding amenity:', error);
+      setErrorMessage('Failed to add amenity. Please try again later.');
+    });
   };
 
   const deleteAmenity = (index) => {
