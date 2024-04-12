@@ -7,11 +7,30 @@ function About() {
   const [newAmenity, setNewAmenity] = useState({ name: '', description: '' });
   const [editIndex, setEditIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch amenities data from the API or local storage on component mount
-    // Example: fetchData();
+    fetchAmenities();
   }, []);
+
+  const fetchAmenities = () => {
+    fetch('https://6601a5cb9d7276a75551e1cd.mockapi.io/week16')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch amenities');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setAmenities(data);
+        setIsLoading(false);
+        setErrorMessage('');
+      })
+      .catch(error => {
+        console.error('Error fetching amenities:', error);
+        setErrorMessage('Failed to fetch amenities. Please try again later.');
+      });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -20,25 +39,25 @@ function About() {
 
   const addAmenity = () => {
     if (!newAmenity.name.trim() || !newAmenity.description.trim()) {
-      // If either name or description is blank, set error message
       setErrorMessage('Both fields must be completed to add the amenity');
       return;
     }
 
-    // Manually construct the complete data of the new amenity
-    const newAmenityData = { ...newAmenity };
-
-    fetch('https://6601a5cb9d7276a75551e1cd.mockapi.io/week16/amenities', {
+    fetch('https://6601a5cb9d7276a75551e1cd.mockapi.io/week16', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newAmenity),
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to add amenity');
+      }
+      return response.json();
+    })
     .then(data => {
-      // Add the constructed new amenity to the state
-      setAmenities([...amenities, newAmenityData]);
+      setAmenities([...amenities, data]);
       setErrorMessage('');
       setNewAmenity({ name: '', description: '' });
     })
@@ -48,15 +67,55 @@ function About() {
     });
   };
 
-  const deleteAmenity = (index) => {
-    const updatedAmenities = [...amenities];
-    updatedAmenities.splice(index, 1);
-    setAmenities(updatedAmenities);
+  const deleteAmenity = (id) => {
+    fetch(`https://6601a5cb9d7276a75551e1cd.mockapi.io/week16/${id}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to delete amenity');
+      }
+      setAmenities(amenities.filter(amenity => amenity.id !== id));
+    })
+    .catch(error => {
+      console.error('Error deleting amenity:', error);
+      setErrorMessage('Failed to delete amenity. Please try again later.');
+    });
   };
 
-  const editAmenity = (index) => {
-    setEditIndex(index);
-    setNewAmenity(amenities[index]);
+  const editAmenity = (id) => {
+    const amenityToEdit = amenities.find(amenity => amenity.id === id);
+    setEditIndex(id);
+    setNewAmenity(amenityToEdit);
+  };
+
+  const updateAmenity = () => {
+    const { id, name, description } = newAmenity;
+    if (!name.trim() || !description.trim()) {
+      setErrorMessage('Both fields must be completed to update the amenity');
+      return;
+    }
+
+    fetch(`https://6601a5cb9d7276a75551e1cd.mockapi.io/week16/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, description }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to update amenity');
+      }
+      setAmenities(amenities.map(amenity => amenity.id === id ? { ...amenity, name, description } : amenity));
+      setErrorMessage('');
+      setNewAmenity({ name: '', description: '' });
+      setEditIndex(null);
+    })
+    .catch(error => {
+      console.error('Error updating amenity:', error);
+      setErrorMessage('Failed to update amenity. Please try again later.');
+    });
   };
 
   return (
@@ -75,8 +134,8 @@ function About() {
         </Col>
       </Row>
 
-      {/* Add Amenity form */}
-      <h2 className="mt-5">Add Amenity</h2>
+      {/* Add/Edit Amenity form */}
+      <h2 className="mt-5">{editIndex !== null ? 'Edit' : 'Add'} Amenity</h2>
       <Form>
         <Row className="mb-3">
           <Col>
@@ -86,28 +145,32 @@ function About() {
             <Form.Control type="text" name="description" value={newAmenity.description} onChange={handleInputChange} placeholder="Description" />
           </Col>
           <Col>
-            <Button variant="primary" onClick={addAmenity}>{editIndex !== null ? 'Update' : 'Add'} Amenity</Button>
+            <Button variant="primary" onClick={editIndex !== null ? updateAmenity : addAmenity}>{editIndex !== null ? 'Update' : 'Add'} Amenity</Button>
           </Col>
         </Row>
         {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
       </Form>
 
       {/* Display Amenities */}
-      <h2 className="mt-5">Amenities</h2>
-      <Row className="mt-3">
-        {amenities.map((amenity, index) => (
-          <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>{amenity.name}</Card.Title>
-                <Card.Text>{amenity.description}</Card.Text>
-                <Button variant="danger" onClick={() => deleteAmenity(index)}>Delete</Button>
-                <Button variant="primary" onClick={() => editAmenity(index)}>Edit</Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      {!isLoading && amenities.length > 0 && (
+        <>
+          <h2 className="mt-5">Amenities</h2>
+          <Row className="mt-3">
+            {amenities.map((amenity, index) => (
+              <Col key={index} xs={12} sm={6} md={4} lg={3} className="mb-3">
+                <Card>
+                  <Card.Body>
+                    <Card.Title>{amenity.name}</Card.Title>
+                    <Card.Text>{amenity.description}</Card.Text>
+                    <Button variant="danger" onClick={() => deleteAmenity(amenity.id)}>Delete</Button>
+                    <Button variant="primary" onClick={() => editAmenity(amenity.id)}>Edit</Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </>
+      )}
     </Container>
   );
 }
